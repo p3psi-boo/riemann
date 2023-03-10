@@ -3,58 +3,23 @@
   streams, client, email, logging, and graphite; the common functions used in
   config. Provides a default core and functions ((tcp|udp)-server, streams,
   index, reinject) which operate on that core."
-  (:import (java.io File))
-  (:require [riemann [boundary    :refer [boundary]]
-                     [client      :refer [udp-client tcp-client multi-client]]
-                     [clickhouse  :refer [clickhouse]]
-                     [cloudwatch  :refer [cloudwatch]]
-                     [common      :as common :refer [event]]
+  (:require [cemerick.pomegranate :refer [add-dependencies]]
+            [clojure.java.io :refer [file]]
+            [clojure.tools.logging :refer :all]
+            [riemann [common      :as common]
                      [core        :as core]
-                     [datadog     :refer [datadog]]
-                     [druid       :refer [druid]]
-                     [email       :refer [mailer]]
                      [folds       :as folds]
-                     [graphite    :as graphite-client :refer [graphite]]
-                     [hipchat     :refer [hipchat]]
+                     [graphite    :as graphite-client]
                      [index       :as index]
-                     [influxdb    :refer [influxdb]]
-                     [influxdb2   :refer [influxdb2]]
-                     [kafka       :as kafka :refer [kafka]]
-                     [kairosdb    :refer [kairosdb]]
-                     [keenio      :refer [keenio]]
-                     [librato     :refer [librato-metrics]]
-                     [logentries  :refer [logentries]]
+                     [kafka       :as kafka]
                      [logging     :as logging]
-                     [logstash    :as logstash :refer [logstash]]
-                     [mailgun     :refer [mailgun]]
-                     [msteams     :refer [msteams]]
-                     [nagios      :refer [nagios]]
-                     [netuitive   :refer [netuitive]]
-                     [opentsdb    :refer [opentsdb]]
-                     [opsgenie    :refer [opsgenie]]
-                     [pagerduty   :refer [pagerduty]]
-                     [plugin      :refer [load-plugin load-plugins]]
+                     [logstash    :as logstash]
+                     [plugin      :refer [load-plugin]]
                      [pubsub      :as pubsub]
-                     [pushover    :refer [pushover]]
-                     [rabbitmq    :refer [rabbitmq]]
                      [repl]
                      [service     :as service]
-                     [shinken     :refer [shinken]]
-                     [slack       :refer [slack]]
-                     [sns         :refer [sns-publisher]]
-                     [stackdriver :refer [stackdriver]]
-                     [prometheus  :refer [prometheus]]
-                     [elasticsearch :refer [elasticsearch
-                                            default-bulk-formatter
-                                            elasticsearch-bulk]]
                      [streams     :refer :all]
-                     [telegram    :refer [telegram]]
-                     [test        :as test :refer [tap io tests]]
-                     [time        :refer [unix-time linear-time once! every!]]
-                     [twilio      :refer [twilio]]
-                     [victorops   :refer [victorops]]
-                     [xymon       :refer [xymon]]
-                     [zabbix      :refer [zabbix]]]
+                     [test        :as test]]
             [riemann.transport [tcp        :as tcp]
                                [udp        :as udp]
                                [websockets :as websockets]
@@ -62,10 +27,8 @@
                                [graphite   :as graphite]
                                [opentsdb   :as opentsdb]
                                [rabbitmq   :as rabbitmq]]
-            [cemerick.pomegranate :refer [add-dependencies]]
-            [clojure.java.io :refer [file]]
-            [clojure.tools.nrepl.server :as repl]
-            [clojure.tools.logging :refer :all]))
+            [riemann.transport.mqtt :as mqtt])
+  (:import (java.io File)))
 
 (def core "The currently running core."
   (atom (core/core)))
@@ -175,6 +138,14 @@
   (ws-server {:port 5556})"
   [& opts]
   (service! (websockets/ws-server (kwargs-or-map opts))))
+
+(defn mqtt
+  "Add a new mqtt client with opts to the default core.
+
+  (ws-server {:port 5556})"
+  [& opts]
+  (service! (mqtt/mqtt-client (kwargs-or-map opts))))
+
 
 (defn sse-server
   "Add a new SSE channel server with opts to the default core.

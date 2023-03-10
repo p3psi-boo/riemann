@@ -7,6 +7,8 @@
 ;  :warn-on-reflection true
   :jvm-opts ["-server" "-Xms1024m" "-Xmx1024m" "-XX:+CMSParallelRemarkEnabled" "-XX:+AggressiveOpts" "-XX:+CMSClassUnloadingEnabled" "-XX:+IgnoreUnrecognizedVMOptions"]
   :maintainer {:email "aphyr@aphyr.com"}
+  :repositories [["central" "https://maven.aliyun.com/nexus/content/groups/public"]
+                 ["clojars" "https://mirrors.tuna.tsinghua.edu.cn/clojars/"]]
   :dependencies [
     [org.clojure/algo.generic "0.1.2"]
     [org.clojure/clojure "1.9.0"]
@@ -47,6 +49,7 @@
     [spootnik/kinsky "0.1.26"]
     [pjstadig/humane-test-output "0.8.3"]
     [com.novemberain/langohr "5.1.0"]
+    [clojurewerkz/machine_head "1.0.0"]
     [com.fasterxml.jackson.core/jackson-core "2.10.0"]
     [com.fasterxml.jackson.core/jackson-databind "2.10.0"]]
   :managed-dependencies [[org.jsoup/jsoup "1.14.3"]]
